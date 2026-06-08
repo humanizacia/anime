@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+	<title>NeonAnime</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Inter', sans-serif;
+			background: #020008;
+			color: #ede7ff;
+			line-height: 1.5;
+			overflow-x: hidden;
+			-webkit-font-smoothing: antialiased;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.diamond-layer {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+			pointer-events: none;
+			background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 90" opacity="0.45"><polygon points="30,6 54,45 30,84 6,45" fill="none" stroke="%23c792ff" stroke-width="1.1"/><polygon points="30,22 46,45 30,68 14,45" fill="none" stroke="%23a855ff" stroke-width="0.7"/></svg>');
+			background-repeat: repeat;
+			background-size: 65px 95px;
+			mask: radial-gradient(ellipse at center, black 28%, transparent 88%);
+			-webkit-mask: radial-gradient(ellipse at center, black 28%, transparent 88%);
+			transition: transform 0.1s ease-out;
+		}
+
+		.bubbles {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+			pointer-events: none;
+		}
+		.bubble {
+			position: absolute;
+			background: rgba(160, 100, 255, 0.16);
+			border-radius: 50%;
+			border: 0.5px solid rgba(160, 100, 255, 0.25);
+			animation: floatBubble linear infinite;
+		}
+		@keyframes floatBubble {
+			0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+			15% { opacity: 0.55; }
+			85% { opacity: 0.3; }
+			100% { transform: translateY(-20vh) translateX(25px) scale(1.05); opacity: 0; }
+		}
+
+		.container {
+			position: relative;
+			z-index: 10;
+			max-width: 1300px;
+			margin: 0 auto;
+			padding: 1.5rem 1.5rem 0;
+			flex: 1;
+		}
+
+		@media (max-width: 640px) {
+			.container {
+				padding: 1rem 1rem 0;
+			}
+		}
+
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
+			flex-wrap: wrap;
+			gap: 1rem;
+			margin-bottom: 2rem;
+			padding-bottom: 1rem;
+			border-bottom: 1px solid rgba(157, 78, 255, 0.5);
+		}
+		@media (max-width: 640px) {
+			.header {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+		}
+		.title-section h1 {
+			font-size: clamp(2rem, 7vw, 3.5rem);
+			font-weight: 800;
+			background: linear-gradient(130deg, #ecd5ff, #c285ff, #a05eff);
+			background-clip: text;
+			-webkit-background-clip: text;
+			color: transparent;
+		}
+		.nick-ring {
+			display: flex;
+			gap: 0.6rem;
+			margin-top: 0.3rem;
+			flex-wrap: wrap;
+		}
+		.nick-pill {
+			background: rgba(48, 18, 80, 0.7);
+			backdrop-filter: blur(5px);
+			border-radius: 40px;
+			padding: 0.2rem 1rem;
+			font-size: 0.75rem;
+			font-weight: 500;
+			border: 0.5px solid rgba(172, 110, 255, 0.7);
+		}
+		.descriptor {
+			font-size: 0.75rem;
+			color: #d0b5ff;
+			border-right: 1px solid #a56eff;
+			padding-right: 16px;
+			text-align: right;
+			font-weight: 500;
+		}
+		@media (max-width: 640px) {
+			.descriptor {
+				text-align: left;
+				border-right: none;
+				border-left: 1px solid #a56eff;
+				padding-left: 12px;
+			}
+		}
+
+		.banner-area {
+			margin: 0.5rem 0 0rem;
+			border-radius: 28px;
+			background: linear-gradient(145deg, #0e031f, #1b0a30);
+			border: 1px solid rgba(157, 78, 255, 0.65);
+			overflow: hidden;
+			position: relative;
+		}
+		.banner-inner {
+			width: 100%;
+			height: clamp(130px, 22vw, 190px);
+			position: relative;
+			overflow: hidden;
+		}
+		.banner-gif {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: center;
+			display: block;
+		}
+		.avatar-overhang {
+			display: flex;
+			justify-content: center;
+			position: relative;
+			margin-top: clamp(-38px, -8vw, -48px);
+			z-index: 15;
+			padding-bottom: 20px;
+		}
+		.avatar-outer-ring {
+			background: linear-gradient(135deg, #cc96ff, #9a55ff);
+			border-radius: 100px;
+			padding: 2px;
+			box-shadow: 0 0 8px #c285ff;
+			display: inline-flex;
+		}
+		.avatar-inner {
+			width: clamp(80px, 14vw, 105px);
+			height: clamp(80px, 14vw, 105px);
+			background: radial-gradient(ellipse at 50% 0%, #2a1652, #080014);
+			border-radius: 50%;
+			display: flex;
+			align-items: flex-end;
+			justify-content: center;
+			overflow: hidden;
+		}
+		.avatar-img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			border-radius: 50%;
+		}
+
+		.section-header {
+			font-size: clamp(1.5rem, 5vw, 1.9rem);
+			font-weight: 700;
+			margin: 2rem 0 1.5rem 0;
+			padding-left: 0.9rem;
+			border-left: 4px solid #c285ff;
+		}
+
+		.anime-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+			margin-bottom: 2rem;
+		}
+		@media (min-width: 768px) {
+			.anime-grid {
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: 1.8rem;
+			}
+		}
+
+		.anime-card {
+			background: rgba(12, 3, 22, 0.8);
+			backdrop-filter: blur(12px);
+			border-radius: 1.5rem;
+			border: 1px solid rgba(157, 78, 255, 0.55);
+			overflow: hidden;
+			transition: all 0.25s ease;
+			cursor: pointer;
+			display: flex;
+			flex-direction: column;
+		}
+		.anime-card:hover {
+			transform: translateY(-5px);
+			border-color: #d19eff;
+			box-shadow: 0 20px 30px -12px rgba(114, 0, 255, 0.4);
+		}
+		.anime-preview {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			object-fit: cover;
+			display: block;
+		}
+		.anime-info {
+			padding: 0.8rem 0.8rem 1rem;
+		}
+		.anime-title {
+			font-size: 1rem;
+			font-weight: 700;
+			margin-bottom: 0.3rem;
+			color: #ecd5ff;
+		}
+		@media (min-width: 768px) {
+			.anime-title {
+				font-size: 1.2rem;
+			}
+			.anime-info {
+				padding: 1rem 1rem 1.2rem;
+			}
+		}
+		.rating {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 0.8rem;
+			color: #ffd966;
+		}
+		.star-single {
+			font-size: 0.9rem;
+			color: #ffd966;
+			filter: drop-shadow(0 0 2px #ffb347);
+		}
+
+		.player-page {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: #020008;
+			backdrop-filter: blur(8px);
+			z-index: 200;
+			overflow-y: auto;
+			display: none;
+			justify-content: center;
+			align-items: flex-start;
+			padding: 2rem 1.5rem;
+		}
+		.player-page.active {
+			display: flex;
+		}
+		.player-container {
+			max-width: 1100px;
+			width: 100%;
+			background: transparent;
+			padding: 1rem 0 3rem 0;
+			margin: 1rem auto;
+		}
+
+		.anime-poster {
+			width: 100%;
+			max-width: 480px;
+			margin: 0 auto 2rem auto;
+			display: block;
+			border-radius: 1.5rem;
+			box-shadow: 0 0 30px rgba(157, 78, 255, 0.4);
+			border: 1px solid rgba(157, 78, 255, 0.5);
+			transition: transform 0.2s ease;
+		}
+		.anime-poster:hover {
+			transform: scale(1.01);
+			box-shadow: 0 0 40px rgba(157, 78, 255, 0.6);
+		}
+
+		.anime-details-card {
+			background: rgba(12, 3, 22, 0.65);
+			backdrop-filter: blur(12px);
+			border-radius: 1.5rem;
+			border: 1px solid rgba(157, 78, 255, 0.5);
+			padding: 1.5rem;
+			margin: 1rem 0 1.5rem 0;
+		}
+		.info-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+			gap: 0.8rem 1.5rem;
+			margin-bottom: 1rem;
+		}
+		.info-item {
+			font-size: 0.9rem;
+		}
+		.info-label {
+			color: #c285ff;
+			font-weight: 600;
+			margin-right: 8px;
+		}
+		.info-value {
+			color: #e5d5ff;
+		}
+		.genres-wrap {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-top: 0.2rem;
+		}
+		.genre-badge {
+			background: rgba(157, 78, 255, 0.2);
+			border-radius: 30px;
+			padding: 0.25rem 0.9rem;
+			font-size: 0.75rem;
+			border: 0.5px solid #b87aff;
+			font-weight: 500;
+		}
+		.description-text {
+			font-size: 0.95rem;
+			line-height: 1.6;
+			margin-top: 1.2rem;
+			padding-top: 1.2rem;
+			border-top: 1px solid rgba(157, 78, 255, 0.4);
+			color: #e0ceff;
+		}
+
+		.dropdown-select {
+			width: 100%;
+			background: #0a0218;
+			border: 1.5px solid #b87aff;
+			border-radius: 14px;
+			padding: 0.8rem 1rem;
+			font-family: 'Inter', sans-serif;
+			font-size: 0.95rem;
+			font-weight: 500;
+			color: #ede7ff;
+			cursor: pointer;
+			margin: 0.5rem 0 1.2rem 0;
+			transition: 0.2s;
+		}
+		.dropdown-select:focus {
+			outline: none;
+			border-color: #d19eff;
+			box-shadow: 0 0 12px #c285ff;
+		}
+
+		.video-wrapper {
+			position: relative;
+			width: 100%;
+			background: #000000;
+			border-radius: 1.2rem;
+			overflow: hidden;
+			margin: 1rem 0 1rem 0;
+			box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.8);
+			border: 1px solid rgba(157, 78, 255, 0.4);
+			aspect-ratio: 16 / 9;
+		}
+		.video-wrapper iframe {
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+		.video-wrapper video {
+			width: 100%;
+			height: 100%;
+			display: block;
+			outline: none;
+		}
+
+		.fallback-button {
+			display: block;
+			width: 100%;
+			background: #3a1b6e;
+			border: 1px solid #b87aff;
+			border-radius: 14px;
+			padding: 0.8rem 1rem;
+			font-size: 0.9rem;
+			font-weight: 500;
+			color: #f0e2ff;
+			cursor: pointer;
+			transition: 0.2s;
+			text-align: center;
+			margin: 0.8rem 0 1.2rem 0;
+			font-family: 'Inter', sans-serif;
+		}
+		.fallback-button:hover {
+			background: #5a2b9e;
+			border-color: #d19eff;
+			box-shadow: 0 0 8px #c285ff;
+		}
+
+		.episodes-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(60px, 72px));
+			gap: 0.8rem;
+			margin-top: 0.5rem;
+			justify-content: flex-start;
+		}
+		.ep-btn {
+			background: #0a0218;
+			border: 1.5px solid #b87aff;
+			border-radius: 14px;
+			padding: 0.7rem 0;
+			font-size: 1rem;
+			font-weight: 700;
+			color: #f0e5ff;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			font-family: 'Inter', sans-serif;
+			text-align: center;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+		}
+		.ep-btn:hover {
+			background: #6b2fd9;
+			border-color: #e6baff;
+			transform: translateY(-2px);
+			box-shadow: 0 5px 15px rgba(157, 78, 255, 0.3);
+		}
+		.ep-btn.active {
+			background: #9a55ff;
+			border-color: #f0cbff;
+			box-shadow: 0 0 12px #c285ff;
+			color: white;
+		}
+
+		.control-group {
+			margin: 1.2rem 0 0.8rem 0;
+		}
+		.control-label {
+			font-size: 0.8rem;
+			text-transform: uppercase;
+			letter-spacing: 1.5px;
+			color: #cdaaff;
+			margin-bottom: 0.6rem;
+			display: block;
+			font-weight: 600;
+		}
+
+		.close-player {
+			position: fixed;
+			top: 20px;
+			right: 30px;
+			background: #2a1155cc;
+			border: 1px solid #d19eff;
+			border-radius: 50px;
+			padding: 0.5rem 1.3rem;
+			font-size: 0.85rem;
+			font-weight: bold;
+			cursor: pointer;
+			color: white;
+			backdrop-filter: blur(8px);
+			transition: 0.2s;
+			z-index: 210;
+			font-family: 'Inter', sans-serif;
+		}
+		.close-player:hover {
+			background: #8a3eff;
+			box-shadow: 0 0 14px #c285ff;
+		}
+
+		footer {
+			background: linear-gradient(180deg, #0a0218 0%, #05010a 100%);
+			border-top: 1px solid rgba(157, 78, 255, 0.4);
+			padding: 1.5rem 1rem;
+			margin-top: 2rem;
+			position: relative;
+			z-index: 10;
+		}
+		.footer-content {
+			max-width: 1200px;
+			margin: 0 auto;
+			text-align: center;
+		}
+		.footer-logo {
+			font-size: 1.1rem;
+			font-weight: 700;
+			background: linear-gradient(135deg, #ecd5ff, #c285ff);
+			background-clip: text;
+			-webkit-background-clip: text;
+			color: transparent;
+			margin-bottom: 0.8rem;
+			letter-spacing: 1px;
+		}
+		.footer-logo i {
+			background: none;
+			-webkit-background-clip: unset;
+			color: #c285ff;
+			margin-right: 6px;
+		}
+		.footer-copyright {
+			font-size: 0.7rem;
+			color: #8a6bbf;
+			margin-bottom: 0.6rem;
+		}
+		.footer-dev {
+			display: flex;
+			justify-content: center;
+			gap: 1.8rem;
+			flex-wrap: wrap;
+			margin-top: 0.5rem;
+		}
+		.footer-dev a, .footer-dev span {
+			font-size: 0.7rem;
+			color: #b99eff;
+			text-decoration: none;
+			transition: 0.2s;
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.footer-dev a:hover {
+			color: #e8bfff;
+			text-shadow: 0 0 4px #c285ff;
+		}
+		.footer-dev i {
+			font-size: 0.75rem;
+		}
+		.footer-divider {
+			width: 50px;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, #c285ff, transparent);
+			margin: 0.8rem auto 0;
+		}
+
+		@media (max-width: 640px) {
+			.player-page {
+				padding: 1rem;
+			}
+			.close-player {
+				top: 10px;
+				right: 15px;
+				padding: 0.3rem 1rem;
+				font-size: 0.7rem;
+			}
+			.anime-poster {
+				max-width: 340px;
+			}
+			.info-grid {
+				grid-template-columns: 1fr;
+				gap: 0.6rem;
+			}
+			.episodes-grid {
+				grid-template-columns: repeat(auto-fill, minmax(52px, 62px));
+				gap: 0.6rem;
+			}
+			.ep-btn {
+				padding: 0.55rem 0;
+				font-size: 0.9rem;
+			}
+			.footer-dev {
+				gap: 1rem;
+			}
+		}
+	</style>
+</head>
+<body>
+
+<div class="diamond-layer" id="diamondLayer"></div>
+<div class="bubbles" id="bubblesContainer"></div>
+
+<div class="container">
+	<div class="header">
+		<div class="title-section">
+			<h1>NeonAnime</h1>
+			<div class="nick-ring">
+				<span class="nick-pill">онлайн-кинотеатр</span>
+				<span class="nick-pill">неон</span>
+				<span class="nick-pill">озвучка & серии</span>
+			</div>
+		</div>
+		<div class="descriptor">
+			✦ аниме в твоём стиле ✦
+		</div>
+	</div>
+
+	<div class="banner-area">
+		<div class="banner-inner">
+			<img class="banner-gif" src="https://i.ibb.co/chwSDZVQ/animated.gif" alt="neon banner" onerror="this.src='https://placehold.co/1200x200/1a0a30/9a55ff?text=NEON+ANIME'">
+		</div>
+	</div>
+	<div class="avatar-overhang">
+		<div class="avatar-outer-ring">
+			<div class="avatar-inner">
+				<img class="avatar-img" id="avatarImage" src="https://i.ibb.co/8nQQ9BD7/IMG-4274.jpg" alt="avatar" onerror="this.src='https://placehold.co/100/2a1652/c285ff?text=K'">
+			</div>
+		</div>
+	</div>
+
+	<div class="section-header">✦ Коллекция аниме ✦</div>
+	<div class="anime-grid" id="animeGrid"></div>
+</div>
+
+<footer>
+	<div class="footer-content">
+		<div class="footer-logo">
+			<i class="fas fa-tv"></i> NeonAnime
+		</div>
+		<div class="footer-copyright">
+			© 2026 · Все права защищены
+		</div>
+		<div class="footer-dev">
+			<span><i class="fas fa-code"></i> Разработчик:</span>
+			<a href="https://t.me/Kelderius" target="_blank"><i class="fab fa-telegram"></i> @Kelderius</a>
+			<span><i class="fab fa-discord"></i> kelderius3</span>
+		</div>
+		<div class="footer-divider"></div>
+	</div>
+</footer>
+
+<div id="playerPage" class="player-page">
+	<div class="player-container">
+		<img class="anime-poster" id="animePoster" src="" alt="poster">
+		
+		<div class="anime-details-card">
+			<div class="info-grid" id="animeInfoGrid"></div>
+			<div class="description-text" id="animeDescription"></div>
+		</div>
+
+		<div class="control-group">
+			<span class="control-label">🎙 Озвучка</span>
+			<select id="dubSelect" class="dropdown-select"></select>
+		</div>
+
+		<div class="video-wrapper" id="videoWrapper">
+			<video id="animeVideo" controls preload="metadata" poster="https://i.ibb.co/8nQQ9BD7/IMG-4274.jpg"></video>
+		</div>
+
+		<button id="fallbackButton" class="fallback-button">Не работает плеер? Нажмите сюда</button>
+
+		<div class="control-group">
+			<span class="control-label">📺 Серии</span>
+			<div id="episodesGrid" class="episodes-grid"></div>
+		</div>
+	</div>
+	<div class="close-player" id="closePlayerBtn">✕ Закрыть</div>
+</div>
+
+<script>
+const episodeUrls = {
+	"sundub": {
+		1: "https://filebin.net/vu8usoc78ww29677/-6309990577284129302.mp4",
+		2: "https://filebin.net/wiz9qlurc3vgkl8n/9165471677741156354.mp4",
+		3: "https://filebin.net/73rw8o8ucopc4vio/-1247178461741023886.mp4",
+		4: "https://filebin.net/795744mmz4jm7vka/5384129929923880327.mp4",
+		5: "https://filebin.net/hntfkm49xkrzdasn/-1262718743080400458.mp4",
+		6: "https://filebin.net/gsi67du272z6v6ep/7371008744094550982.mp4",
+		7: "https://filebin.net/5k1ekq9dlmamzidt/-3680969442612472002.mp4",
+		8: "https://filebin.net/fwts0psf2763dtn7/354277318453372079.mp4",
+		9: "https://filebin.net/lohr0wrxyr52qk11/-9058254675924238557.mp4",
+		10: "https://filebin.net/i6dz94jkmq4lf468/3705829742438373233.mp4",
+		11: "https://filebin.net/2p7789qfevakgf3z/-2695093726995011834.mp4",
+		12: "https://filebin.net/rsjb2s5hu634gobi/-2895327726159450776.mp4",
+		13: "https://filebin.net/uinp0avlxmnvvcry/-6284496660233489784.mp4",
+		14: "https://filebin.net/5r6z8tlnmwpurure/5544053653682979667.mp4",
+		15: "https://filebin.net/kclgj69mi6woj47e/-746321753559989524.mp4",
+		16: "https://filebin.net/7k1uttshw97nh4if/-3163270305816488711.mp4",
+		17: "https://filebin.net/ud9b75sx12ifm9xu/-2151734738109746098.mp4",
+		18: "https://filebin.net/vkreplchr9ylhpyv/-5862572981842123191.mp4",
+		19: "https://filebin.net/f1j7cuff9kas1pkt/-8536189909628339505.mp4",
+		20: "https://filebin.net/3vcrim0x7a1hk6n2/2454768544492998454.mp4",
+		21: "https://filebin.net/83d7pz1w7ev3bat7/2493502951214811340.mp4",
+		22: "https://filebin.net/gwn6vta69amdkfw8/6957918057789472011.mp4",
+		23: "https://filebin.net/olq89mbvqwdosjew/-6530944194981776842.mp4",
+		24: "https://filebin.net/vouwhb52wx1g0mv2/-1793029567036642742.mp4"
+	},
+	"anidub": {
+		1: "https://filebin.net/vln1lb4pze73ozfu/1503395022367420161.mp4",
+		2: "https://filebin.net/qf12m5nfv3bkzvza/-5046669934834633230.mp4",
+		3: "https://filebin.net/cl451z39y6fuh2zq/-6421700102945178072.mp4",
+		4: "https://filebin.net/vdcwig1bczsyskeb/-555681026513348797.mp4",
+		5: "https://filebin.net/6f3lr27xly496e5w/-6627710021048537592.mp4",
+		6: "https://filebin.net/2g9e1g4xttdm4lmm/766109690744908751.mp4",
+		7: "https://filebin.net/fkju1iyp2vpg3nv3/4823358225522491840.mp4",
+		8: "https://filebin.net/fh22tpasyhsc80s0/2280163926569535410.mp4",
+		9: "https://filebin.net/p06s432teim3xmp7/-56015198062434511.mp4",
+		10: "https://filebin.net/m35ybkh7hqhtgapf/5907494221891913104.mp4",
+		11: "https://filebin.net/102hxpr26w4c4t81/8525370676072834869.mp4",
+		12: "https://filebin.net/mapycvlw5uqscalz/-597497255340041320.mp4",
+		13: ""
+	},
+	"jojo": {
+		1: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%201%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		2: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%202%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		3: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%203%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		4: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%204%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		5: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%205%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		6: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%206%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		7: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%207%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20_%20JoJo%20no%20Kimyou%20na",
+		8: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%208%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20Bo",
+		9: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%209%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20Bo",
+		10: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2010%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		11: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2011%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		12: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2012%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		13: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2013%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		14: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2014%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		15: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2015%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		16: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2016%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		17: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2017%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		18: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2018%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		19: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2019%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		20: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2020%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		21: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2021%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		22: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2022%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		23: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2023%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		24: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2024%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		25: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2025%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B",
+		26: "https://filebin.net/9fkr5ycnuzwhzwyu/%d0%a1%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%20%d0%9d%d0%b5%d0%b2%d0%b5%d1%80%d0%be%d1%8f%d1%82%d0%bd%d1%8b%d0%b5%20%d0%bf%d1%80%d0%b8%d0%ba%d0%bb%d1%8e%d1%87%d0%b5%d0%bd%d0%b8%d1%8f%20%d0%94%d0%b6%d0%be%d0%94%d0%b6%d0%be%20_%201%20%d1%81%d0%b5%d0%b7%d0%be%d0%bd%2026%20%d1%81%d0%b5%d1%80%d0%b8%d1%8f%20JoJo%20no%20Kimyou%20na%20B"
+	}
+};
+
+function getVideoUrl(animeId, dubId, episodeNum) {
+	if (animeId === "luckystar" && dubId === "sundub" && episodeUrls["sundub"] && episodeUrls["sundub"][episodeNum]) {
+		return episodeUrls["sundub"][episodeNum];
+	}
+	if (animeId === "watamote" && dubId === "anidub" && episodeUrls["anidub"] && episodeUrls["anidub"][episodeNum]) {
+		return episodeUrls["anidub"][episodeNum];
+	}
+	if (animeId === "jojo" && dubId === "anidub" && episodeUrls["jojo"] && episodeUrls["jojo"][episodeNum]) {
+		return episodeUrls["jojo"][episodeNum];
+	}
+	return `${animeId}-${dubId}-${episodeNum}.mp4`;
+}
+
+const animeList = [
+	{
+		id: "luckystar",
+		title: "Lucky Star",
+		rating: 8.1,
+		preview: "https://i.ibb.co/JjSWdfxp/IMG-4497.jpg",
+		poster: "https://i.ibb.co/JjSWdfxp/IMG-4497.jpg",
+		info: {
+			status: "вышел",
+			type: "Сериал",
+			year: "Весна 2007",
+			age: "PG-13",
+			genres: ["Сэйнэн", "Комедия", "Пародия", "Повседневность", "Школьная жизнь"],
+			source: "Манга",
+			studio: "Kyoto Animation",
+			director: "Ямамото Ютака",
+			episodes: 24
+		},
+		description: "Старшеклассница Коната Идзуми — отаку на всю голову. Она весь день проводит за играми в приставку, чтением манги и просмотром любимых аниме-сериалов, а ночью сидит в чатах и онлайн-играх. Хоть Коната и ходит в школу для одарённых детей, на домашние задания и прочую учёбу времени ей не хватает, поэтому она имеет обыкновение готовиться в последнюю ночь перед экзаменом.\n\nВ школе у неё появляются три лучшие подруги: умница-красавица и тихоня Миюки Такара, милая недотёпа Цукаса Хираги и её сестра-близнец Кагами Хираги — целеустремленный эгоцентрик. Обладая столь разными характерами, девочки уживаются вместе без проблем, иногда вздорят, но в целом живут очень дружно."
+	},
+	{
+		id: "watamote",
+		title: "Watamote",
+		rating: 7.1,
+		preview: "https://i.ibb.co/cX2G1zm9/IMG-4554.jpg",
+		poster: "https://i.ibb.co/21FCfkC8/IMG-4552.jpg",
+		info: {
+			status: "вышел",
+			type: "Сериал",
+			year: "Лето 2013",
+			age: "PG-13",
+			genres: ["Комедия", "Повседневность", "Школьная жизнь"],
+			source: "Манга",
+			studio: "SILVER LINK.",
+			director: "Онума Син",
+			episodes: 13
+		},
+		description: "Пятнадцатилетняя Томоко Куроки хорошо разбирается в отомэ-играх, аниме и лайт-новеллах. Томоко с нетерпением ждёт перевода в старшие классы — ведь там, благодаря большому опыту общения (в видеоиграх), она сможет стать душой любой компании. Реальность оказывается несколько иной, ведь на самом деле Томоко — нелюдимая одиночка, которая не может свободно разговаривать с людьми, кроме своей семьи и единственной подруги. Поняв, что одноклассники не спешат становиться её друзьями, героиня решает, что с этим нужно что-то делать."
+	},
+	{
+		id: "jojo",
+		title: "JJBA: Phantom blood",
+		rating: 8.6,
+		preview: "https://i.ibb.co/tpbLPNJ1/IMG-4567.jpg",
+		poster: "https://i.ibb.co/1fxq0Gpz/IMG-4565.jpg",
+		info: {
+			status: "вышел",
+			type: "Сериал",
+			year: "Осень 2012",
+			age: "R-17+",
+			genres: ["Сёнэн", "Вампиры", "Приключения", "Экшен", "Исторический", "Сверхъестественное"],
+			source: "Манга",
+			studio: "David Production",
+			director: "Цуда Наокацу, Судзуки Кэнъити",
+			episodes: 26
+		},
+		description: "Великобритания, XIX век. Джонатан Джостар, он же ДжоДжо, счастливо живёт в особняке со своим отцом. И вот у его семьи случается пополнение — отец семейства Джордж Джостар усыновляет странного паренька по имени Дио Брандо. Джонатан рад — у него появится новый друг. Однако Дио вовсе не настроен проявлять дружелюбие. Он задумал избавиться от единственного наследника Джостаров и заполучить всё их состояние себе. Мало того, что он избил Джостара-младшего в спарринге по боксу, настроил его друзей против Джонатана, так ещё и украл первый поцелуй у его девушки! Как будто этого мало, Дио сжигает в печи любимую собаку Джонатана — Денни. Но хуже всего то, что Дио тоже лыком не шит — на людях он ведёт себя как образцовый джентльмен. Тут терпению ДжоДжо приходит конец..."
+	}
+];
+
+const dubsConfig = {
+	"luckystar": {
+		title: "Lucky Star (Лаки Стар)",
+		dubs: [
+			{ name: "SunDub & VOX-S", id: "sundub" },
+			{ name: "AniLibria", id: "anilibria" },
+			{ name: "AniDUB", id: "anidub" }
+		],
+		totalEpisodes: 24
+	},
+	"watamote": {
+		title: "Watamote (Мне плевать, что я не популярна)",
+		dubs: [
+			{ name: "AniDUB", id: "anidub" },
+			{ name: "AniLibria", id: "anilibria" }
+		],
+		totalEpisodes: 13
+	},
+	"jojo": {
+		title: "JoJo's Bizarre Adventure (2012)",
+		dubs: [
+			{ name: "AniDUB", id: "anidub" }
+		],
+		totalEpisodes: 26
+	}
+};
+
+let currentAnimeId = null;
+let currentDubId = null;
+let currentEpisodeNum = 1;
+let currentVideoUrl = "";
+
+function renderAnimeGrid() {
+	const grid = document.getElementById('animeGrid');
+	if (!grid) return;
+	grid.innerHTML = '';
+	animeList.forEach(anime => {
+		const card = document.createElement('div');
+		card.className = 'anime-card';
+		card.setAttribute('data-id', anime.id);
+		card.innerHTML = `
+			<img class="anime-preview" src="${anime.preview}" alt="${anime.title}" loading="lazy" onerror="this.src='https://placehold.co/400x225/1f0e38/c285ff?text=${encodeURIComponent(anime.title)}'">
+			<div class="anime-info">
+				<div class="anime-title">${anime.title}</div>
+				<div class="rating"><span class="star-single">⭐️</span> ${anime.rating}</div>
+			</div>
+		`;
+		card.addEventListener('click', (e) => {
+			e.stopPropagation();
+			openAnimePage(anime.id);
+		});
+		grid.appendChild(card);
+	});
+}
+
+function setVideoPlayer(url) {
+	const wrapper = document.getElementById('videoWrapper');
+	const existingIframe = wrapper.querySelector('iframe');
+	const videoElement = document.getElementById('animeVideo');
+	
+	if (existingIframe) existingIframe.remove();
+	if (videoElement) {
+		videoElement.style.display = 'block';
+		videoElement.src = url;
+		videoElement.load();
+	}
+}
+
+function openFallback() {
+	if (currentVideoUrl) {
+		window.open(currentVideoUrl, '_blank');
+	}
+}
+
+function openAnimePage(animeId) {
+	const config = dubsConfig[animeId];
+	const animeData = animeList.find(a => a.id === animeId);
+	if (!config || !animeData) {
+		alert("Пока нет данных по этому аниме, но скоро добавлю!");
+		return;
+	}
+	
+	currentAnimeId = animeId;
+	const defaultDub = config.dubs[0];
+	currentDubId = defaultDub.id;
+	currentEpisodeNum = 1;
+	currentVideoUrl = getVideoUrl(animeId, currentDubId, currentEpisodeNum);
+
+	document.getElementById('animePoster').src = animeData.poster;
+	
+	const infoGrid = document.getElementById('animeInfoGrid');
+	infoGrid.innerHTML = `
+		<div class="info-item"><span class="info-label">Статус:</span><span class="info-value">${animeData.info.status}</span></div>
+		<div class="info-item"><span class="info-label">Тип:</span><span class="info-value">${animeData.info.type}</span></div>
+		<div class="info-item"><span class="info-label">Год выхода:</span><span class="info-value">${animeData.info.year}</span></div>
+		<div class="info-item"><span class="info-label">Возрастной рейтинг:</span><span class="info-value">${animeData.info.age}</span></div>
+		<div class="info-item"><span class="info-label">Жанры:</span>
+			<div class="genres-wrap">
+				${animeData.info.genres.map(g => `<span class="genre-badge">${g}</span>`).join('')}
+			</div>
+		</div>
+		<div class="info-item"><span class="info-label">Первоисточник:</span><span class="info-value">${animeData.info.source}</span></div>
+		<div class="info-item"><span class="info-label">Студия:</span><span class="info-value">${animeData.info.studio}</span></div>
+		<div class="info-item"><span class="info-label">Режиссер:</span><span class="info-value">${animeData.info.director}</span></div>
+		<div class="info-item"><span class="info-label">Количество серий:</span><span class="info-value">${animeData.info.episodes}</span></div>
+	`;
+	document.getElementById('animeDescription').innerText = animeData.description;
+	
+	const fallbackBtn = document.getElementById('fallbackButton');
+	const newFallbackBtn = fallbackBtn.cloneNode(true);
+	fallbackBtn.parentNode.replaceChild(newFallbackBtn, fallbackBtn);
+	newFallbackBtn.addEventListener('click', openFallback);
+	
+	const dubSelect = document.getElementById('dubSelect');
+	dubSelect.innerHTML = '';
+	config.dubs.forEach(dub => {
+		const option = document.createElement('option');
+		option.value = dub.id;
+		option.textContent = dub.name;
+		if (dub.id === currentDubId) option.selected = true;
+		dubSelect.appendChild(option);
+	});
+	dubSelect.onchange = (e) => {
+		const selectedDubId = e.target.value;
+		const selectedDub = config.dubs.find(d => d.id === selectedDubId);
+		if (selectedDub) {
+			currentDubId = selectedDubId;
+			currentVideoUrl = getVideoUrl(currentAnimeId, currentDubId, currentEpisodeNum);
+			setVideoPlayer(currentVideoUrl);
+		}
+	};
+
+	const episodesGrid = document.getElementById('episodesGrid');
+	episodesGrid.innerHTML = '';
+	for (let i = 1; i <= config.totalEpisodes; i++) {
+		const btn = document.createElement('button');
+		btn.className = 'ep-btn';
+		if (i === currentEpisodeNum) btn.classList.add('active');
+		btn.textContent = i;
+		btn.addEventListener('click', (function(epNum) {
+			return function() {
+				document.querySelectorAll('#episodesGrid .ep-btn').forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+				currentEpisodeNum = epNum;
+				currentVideoUrl = getVideoUrl(currentAnimeId, currentDubId, currentEpisodeNum);
+				setVideoPlayer(currentVideoUrl);
+			};
+		})(i));
+		episodesGrid.appendChild(btn);
+	}
+
+	setVideoPlayer(currentVideoUrl);
+	document.getElementById('playerPage').classList.add('active');
+	document.body.style.overflow = 'hidden';
+}
+
+function closePlayer() {
+	const playerPage = document.getElementById('playerPage');
+	playerPage.classList.remove('active');
+	document.body.style.overflow = '';
+	const wrapper = document.getElementById('videoWrapper');
+	const iframe = wrapper.querySelector('iframe');
+	const video = document.getElementById('animeVideo');
+	if (iframe) iframe.remove();
+	if (video) {
+		video.pause();
+		video.src = '';
+		video.style.display = 'block';
+	}
+}
+
+function initBubbles() {
+	const container = document.getElementById('bubblesContainer');
+	if (!container) return;
+	const count = window.innerWidth < 768 ? 45 : 75;
+	for (let i = 0; i < count; i++) {
+		const b = document.createElement('div');
+		b.classList.add('bubble');
+		const s = 2 + Math.random() * 13;
+		b.style.width = s + 'px';
+		b.style.height = s + 'px';
+		b.style.left = Math.random() * 100 + '%';
+		b.style.animationDuration = 5 + Math.random() * 18 + 's';
+		b.style.animationDelay = Math.random() * 14 + 's';
+		b.style.opacity = 0.1 + Math.random() * 0.45;
+		container.appendChild(b);
+	}
+}
+
+function initParallax() {
+	document.addEventListener('mousemove', (e) => {
+		const layer = document.getElementById('diamondLayer');
+		if (layer) {
+			const x = (e.clientX / window.innerWidth) * 12;
+			const y = (e.clientY / window.innerHeight) * 12;
+			layer.style.transform = `translate(${x * 0.06}px, ${y * 0.06}px)`;
+		}
+	});
+}
+
+window.addEventListener('load', () => {
+	renderAnimeGrid();
+	initBubbles();
+	initParallax();
+	const closeBtn = document.getElementById('closePlayerBtn');
+	if (closeBtn) closeBtn.addEventListener('click', closePlayer);
+	document.getElementById('playerPage')?.addEventListener('click', (e) => {
+		if (e.target === document.getElementById('playerPage')) closePlayer();
+	});
+	const avatar = document.getElementById('avatarImage');
+	if (avatar && avatar.complete && avatar.naturalHeight === 0) {
+		avatar.src = "https://placehold.co/100/2a1652/c285ff?text=K";
+	}
+});
+</script>
+</body>
+</html>
